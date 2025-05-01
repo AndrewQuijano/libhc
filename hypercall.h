@@ -28,9 +28,6 @@
         : "r"(reg0) x \
         : "memory" \
     );
-
-
-
     #define RETURN return reg1;
 
 #elif defined(CONFIG_MIPS) || defined(mips) || defined(__mips__) || defined(__mips) || defined(__mips64)
@@ -86,7 +83,7 @@
         : "r" (reg0) x \
         : "memory" \
     );
-    #define RETURN reg1;
+    #define RETURN return reg1;
 #elif defined(CONFIG_PPC64) || defined(CONFIG_PPC) || defined(__powerpc__) || defined(__powerpc64__)
     #define REGISTER1 DECLARE_REGISTER(0,r0,num)
     #define REGISTER2 REGISTER1 DECLARE_REGISTER(1,r3,arg1)
@@ -96,8 +93,8 @@
 
     #define ASM(x) asm volatile(\
         "xori 10, 10, 0"\
-        : "+r"(reg0) \
-        : "r"(reg1) x  \
+        : "+r"(reg1) \
+        : "r"(reg0) x  \
         : "memory" \
     );
     #define RETURN return reg1;
@@ -110,8 +107,8 @@
 
     #define ASM(x) asm volatile(\
         "xori x0, x0, 0"\
-        : "+r"(reg0) \
-        : "r"(reg1) x  \
+        : "+r"(reg1) \
+        : "r"(reg0) x  \
         : "memory" \
     );
     #define RETURN return reg1;
