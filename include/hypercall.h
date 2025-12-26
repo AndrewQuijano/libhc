@@ -9,7 +9,7 @@
     #define REGISTER5 REGISTER4 DECLARE_REGISTER(4,x3,arg4)
 
     #define ASM(x)  asm volatile(\
-       "msr S0_0_c5_c0_0, xzr"\
+       "msr S0_0_c5_c0_0, %0"\
         : "+r"(reg1)\
         : "r"(reg0) x \
         : "memory" \
@@ -23,7 +23,7 @@
     #define REGISTER5 REGISTER4 DECLARE_REGISTER(4,r3,arg4)
 
     #define ASM(x)  asm volatile(\
-       "mcr p7, 0, r0, c0, c0, 0"\
+       "mcr p7, 0, %0, c0, c0, 0"\
         : "+r"(reg1)\
         : "r"(reg0) x \
         : "memory" \
