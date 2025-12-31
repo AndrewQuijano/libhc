@@ -21,7 +21,50 @@ else()
     set(PROJECT_VERSION_PATCH "0")
 endif()
 
+# --- Options ---
+# Architecture can be: x86_64 (default), i386, arm, aarch64
+set(ARCH "x86_64" CACHE STRING "Target architecture for compilation")
+
+# --- Architecture Specific Flags ---
+# We use a list for flags to ensure CMake passes them as separate arguments to the compiler
+set(ARCH_FLAGS "")
+
+if(ARCH STREQUAL "aarch64")
+    set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
+    list(APPEND ARCH_FLAGS "-static")
+    message(STATUS "Configuring for AArch64 (Cross-compile)")
+elseif(ARCH STREQUAL "arm")
+    set(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc)
+    list(APPEND ARCH_FLAGS "-static")
+    message(STATUS "Configuring for ARM 32-bit (Cross-compile)")
+elseif(ARCH STREQUAL "i386")
+    # Separate flags are required: -m32 for 32-bit, -static for PANDA portability
+    list(APPEND ARCH_FLAGS "-m32" "-static")
+    message(STATUS "Configuring for i386 32-bit (Requires gcc-multilib)")
+else()
+    list(APPEND ARCH_FLAGS "-static")
+    message(STATUS "Configuring for Native x86_64")
+endif()
+
 project(libhc VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES C CXX)
+
+# --- Build Target ---
+add_executable(test_hc tests/test_hc.c)
+
+# Include the headers from the local directory
+target_include_directories(test_hc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Apply static flags, you need this for PANDA
+target_compile_options(test_hc PRIVATE ${ARCH_FLAGS} -Wall -Wextra)
+if(ARCH_FLAGS MATCHES "-static")
+    target_link_options(test_hc PRIVATE ${ARCH_FLAGS})
+endif()
+
+# Set output name based on architecture and place the binary in the tests/ directory
+set_target_properties(test_hc PROPERTIES
+    OUTPUT_NAME "test_hc_${ARCH}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests"
+)
 
 # --- Installation ---
 include(GNUInstallDirs)
