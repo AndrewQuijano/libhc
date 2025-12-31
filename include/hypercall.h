@@ -115,23 +115,23 @@
 #else
 #error "not supported"
 #endif
-static inline unsigned long igloo_hypercall(unsigned long num, unsigned long arg1){
+static inline unsigned long igloo_hypercall(unsigned long num, unsigned long arg1) {
     REGISTER2
     ASM()
     RETURN
 }
-static inline unsigned long igloo_hypercall2(unsigned long num, unsigned long arg1, unsigned long arg2){
+static inline unsigned long igloo_hypercall2(unsigned long num, unsigned long arg1, unsigned long arg2) {
     REGISTER3
     ASM(COMMA"r"(reg2))
     RETURN
 }
 
-static inline unsigned long igloo_hypercall3(unsigned long num, unsigned long arg1, unsigned long arg2, unsigned long arg3){
+static inline unsigned long igloo_hypercall3(unsigned long num, unsigned long arg1, unsigned long arg2, unsigned long arg3) {
     REGISTER4
     ASM(COMMA "r"(reg2)COMMA "r"(reg3))
     RETURN
 }
-static inline unsigned long igloo_hypercall4(unsigned long num, unsigned long arg1, unsigned long arg2, unsigned long arg3, unsigned long arg4){
+static inline unsigned long igloo_hypercall4(unsigned long num, unsigned long arg1, unsigned long arg2, unsigned long arg3, unsigned long arg4) {
     REGISTER5
     ASM(COMMA "r"(reg2)COMMA "r"(reg3)COMMA "r"(reg4))
     RETURN
