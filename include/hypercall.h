@@ -1,3 +1,5 @@
+#ifndef __HYPERCALL_H__
+#define __HYPERCALL_H__
 
 #define DECLARE_REGISTER(x,y,z) register unsigned long reg##x asm(#y) = z;
 #define COMMA ,
@@ -155,3 +157,4 @@ static inline int hc(int hc_type, void **s,int len) {
     return ret;
 }
 #endif
+#endif // __HYPERCALL_H__
