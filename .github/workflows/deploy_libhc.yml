@@ -2,53 +2,64 @@ name: Publish libhc debian package
 
 on:
   workflow_dispatch:
+    inputs:
+    bump_type:
+      type: choice
+      required: true
+      default: patch
+      options:
+        - patch
+        - minor
+        - major
+      description: "Select the type of version bump for the release"
   push:
     branches:
       - main
 
 jobs:
-  create_release:
+  get_version:
+    name: "Generate new release version"
     runs-on: ubuntu-latest
     outputs:
       v-version: ${{ steps.version.outputs.v-version }}
-
     steps:
       - name: Get next version
-        uses: reecetech/version-increment@2024.10.1
+        uses: reecetech/version-increment@2026.8.4
         id: version
         with:
           release_branch: main
           use_api: true
-          increment: patch
+          increment: ${{ github.event.inputs.bump_type || 'patch' }}
 
   build_and_publish:
-    needs: create_release
+    name: "Build and publish debian package"
+    needs: get_version
     runs-on: ubuntu-latest
 
     steps:
       - name: Install dependencies
         run: |
           sudo apt-get -qq update -y
-          sudo apt-get -qq install cmake
+          sudo apt-get -qq install -y cmake
 
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Build package
         run: | 
           cmake -B"./build" \
           -DCMAKE_INSTALL_PREFIX="/usr" \
           -DCMAKE_BUILD_TYPE=Release \
-          -DLIBHC_VERSION=${{ needs.create_release.outputs.v-version }}
+          -DLIBHC_VERSION=${{ needs.get_version.outputs.v-version }}
           cd build
           cpack -G DEB
 
       - name: Upload debian package to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.create_release.outputs.v-version }}
+          tag_name: ${{ needs.get_version.outputs.v-version }}
           draft: false
           generate_release_notes: true
           prerelease: false
