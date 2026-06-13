@@ -31,21 +31,23 @@ set(ARCH_FLAGS "")
 
 if(ARCH STREQUAL "aarch64")
     set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
-    list(APPEND ARCH_FLAGS "-static" "-O0" "-g" "-gdwarf-2" "-fno-stack-protector")
+    list(APPEND ARCH_FLAGS "-static" "-O0" "-g")
     message(STATUS "Configuring for AArch64 (Cross-compile)")
+
 elseif(ARCH STREQUAL "arm")
-    set(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc)
-    list(APPEND ARCH_FLAGS "-marm" "-static" "-O0" "-g" "-gdwarf-2" "-fno-stack-protector")
-    message(STATUS "Configuring for ARM 32-bit (Cross-compile)")
+    set(CMAKE_C_COMPILER arm-linux-gnueabi-gcc)
+    
+    # -march=armv5t explicitly restricts the compiler to ancient instructions
+    list(APPEND ARCH_FLAGS "-march=armv5t" "-marm" "-static" "-O0" "-g")
+    message(STATUS "Configuring for Legacy ARM 32-bit ARMv5t (Cross-compile)")
+
 elseif(ARCH STREQUAL "i386")
-    # Separate flags are required: -m32 for 32-bit, -static for PANDA portability
-    list(APPEND ARCH_FLAGS "-m32" "-static" "-O0" "-g" "-gdwarf-2" "-fno-stack-protector")
-    message(STATUS "Configuring for i386 32-bit (Requires gcc-multilib)")
+    list(APPEND ARCH_FLAGS "-m32" "-static" "-O0" "-g")
+    message(STATUS "Configuring for i386 32-bit")
 else()
-    list(APPEND ARCH_FLAGS "-static" "-O0" "-g" "-gdwarf-2" "-fno-stack-protector")
+    list(APPEND ARCH_FLAGS "-static" "-O0" "-g")
     message(STATUS "Configuring for Native x86_64")
 endif()
-
 project(libhc VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES C CXX)
 
 # --- Build Target ---
