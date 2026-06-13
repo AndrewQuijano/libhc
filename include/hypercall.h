@@ -16,7 +16,7 @@
         : "r"(reg0) x \
         : "memory" \
     );
-    #define RETURN  return reg1;
+    #define RETURN  return reg0;
 #elif defined(CONFIG_ARM) || defined(__arm__)
     #define REGISTER1 DECLARE_REGISTER(0,r7,num)
     #define REGISTER2 REGISTER1 DECLARE_REGISTER(1,r0,arg1)
@@ -30,7 +30,7 @@
         : "r"(reg0) x \
         : "memory" \
     );
-    #define RETURN return reg1;
+    #define RETURN return reg0;
 
 #elif defined(CONFIG_MIPS) || defined(mips) || defined(__mips__) || defined(__mips) || defined(__mips64)
     #define REGISTER1 DECLARE_REGISTER(0,v0,num)

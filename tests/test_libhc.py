@@ -1,5 +1,6 @@
 from pandare import Panda
 import argparse
+import time
 
 
 def run_hypercall_test(architecture: str, ci: bool = False):
@@ -26,7 +27,25 @@ def run_hypercall_test(architecture: str, ci: bool = False):
         # Pass in None for snap_name since I already did the revert_sync already
         print(f"[PyPANDA TEST] Starting recording for hypercall test, copying over test_hc_{architecture} binary")
         panda.revert_sync('root')
-        panda.copy_to_guest(f"test_hc_{architecture}")
+
+        # 2. Wake up the guest kernel to the new hardware
+        if architecture == "aarch64":
+            print("[PyPANDA TEST] Forcing guest kernel to rescan PCI bus...")
+            panda.run_serial_cmd("echo 1 > /sys/bus/pci/rescan")
+        
+            # Give the kernel a second to probe the drive and udev to create /dev/sr0
+            time.sleep(2) 
+        
+        print("[PyPANDA TEST] Starting copy to guest...")
+        try:
+            panda.copy_to_guest(f"test_hc_{architecture}")
+        except Exception as e:
+            # If it fails, let's look at the mount points and available devices
+            print("[-] Copy failed. Diagnostic info:")
+            print(f"Block devices: {panda.run_serial_cmd('cat /proc/devices')}")
+            print(f"LS /dev: {panda.run_serial_cmd('ls -F /dev/s*')}")
+            print(f"Mounts: {panda.run_serial_cmd('mount')}")
+            raise e
         print(panda.run_serial_cmd(f"./test_hc_{architecture}/test_hc_{architecture}"))
         panda.stop_run()
 

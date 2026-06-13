@@ -30,7 +30,7 @@ jobs:
           # i386 compile
           sudo apt-get -y install gcc-multilib
           # arm compile
-          sudo apt-get -y install gcc-arm-linux-gnueabihf
+          sudo apt-get -y install gcc-arm-linux-gnueabi
           # aarch64 compile
           sudo apt-get -y install gcc-aarch64-linux-gnu
 
