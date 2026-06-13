@@ -1,3 +1,6 @@
+# No Python
+venv/
+
 # No panda recordings
 recording-rr-*
 *.plog
