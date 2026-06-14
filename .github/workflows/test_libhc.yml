@@ -23,7 +23,7 @@ jobs:
           sudo apt-get -qq install cmake
 
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download for cross-compiling
         run: |
